@@ -4,8 +4,6 @@ const bodyParser = require('body-parser')
 const fetch = require('node-fetch')
 const path = require('path')
 const { Z_FIXED } = require('zlib')
-const { response } = require('express')
-
 const app = express()
 const port = 3000
 
@@ -18,32 +16,37 @@ app.use('/', express.static(path.join(__dirname, '../public')))
 app.get('/latest_photos', async (req, res) => {
     try {
         let response = await fetch(
-            // `https://api.nasa.gov/mars-photos/api/v1/rovers/${req.query.Rover}/latest_photos?camera=${req.query.Camera}&api_key=${process.env.API_KEY}`)
-            `https://api.nasa.gov/mars-photos/api/v1/rovers/${req.query.Rover}/latest_photos?api_key=${process.env.API_KEY}`)
-            .then(res => res.json())
+            `https://api.nasa.gov/mars-photos/api/v1/rovers/${req.query.Rover}/latest_photos?page=1&api_key=${process.env.API_KEY}`)
+            //`https://api.nasa.gov/mars-photos`)
+            .then(res => { 
+                return res.json()
+            })
         if (!response.error && response.latest_photos.length) {
-            let rover_info = {
-                name : response.latest_photos[0].rover.name,
-                launch_date : response.latest_photos[0].rover.launch_date,
-                landing_date : response.latest_photos[0].rover.landing_date,
-                status : response.latest_photos[0].rover.status,
-                most_recent_photo_url : response.latest_photos[0].img_src,
-                photo_taken_date : response.latest_photos[0].earth_date,
-                camera : response.latest_photos[0].camera.name
-            }
+            let rover_info = response.latest_photos.map(item => {
+                return {
+                    name: item.rover.name,
+                    launch_date: item.rover.launch_date,
+                    landing_date: item.rover.landing_date,
+                    status: item.rover.status,
+                    most_recent_photo_url: item.img_src,
+                    photo_date_taken: item.earth_date,
+                    mars_days_active: item.sol,
+                    camera: item.camera.name,
+                    camera_full_name: item.camera.full_name
+                }
+            })
             //http://expressjs.com/en/5x/api.html#res.send
-            // res.send(rover_info)
+            res.send(rover_info)
         } else {
-            res.send({})
+            res.send(response)
         }
-    } catch (err) {
-        console.log('error:', err);
+    } catch (error) {
+        console.log('error:', error);
+        res.send({error})
     }
 })
 
 app.get('/photos', async (req, res) => {
-    // deberia devolber los 3 thumbs
-    console.log('Rover: ',req.query.Rover);
     try {
         let response = await fetch(
             `https://api.nasa.gov/mars-photos/api/v1/rovers/${req.query.Rover}/photos?sol=1&page=1&api_key=${process.env.API_KEY}`)

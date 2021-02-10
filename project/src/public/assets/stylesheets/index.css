@@ -6,82 +6,205 @@ body {
   font-family: Arial;
   min-height: 100vh;
   background-color: #282828;
-  color: white;
+  color: #d9d9d9;;
 }
 
 header {
   /* header styles */
+  display: flex;
+  /* FIXME */
+  /* ver que pasa con el align-items:  desctivado;*/
+  /* align-items: center; */
+  justify-content: center;
 }
+
+header.secondary {
+  justify-content: left;
+}
+
+.grid-col{
+  text-align: center;
+  margin: .5em;
+  padding: .5em;
+  width: auto;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.grid-col.secondary {
+  text-align: left;
+}
+
+.grid-col.secondary:hover {
+  transform: unset;
+  cursor: default;
+}
+
+.container-thumb{
+  min-width: 3.5em;
+  height: 3.5em;
+  background-color: #eeeeee;
+  background-repeat: no-repeat;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: .6em;
+}
+
+.container-thumb.secondary {
+  min-width: unset;
+  height: unset;
+  background-color: unset;
+  background-repeat: unset;
+  -moz-border-radius: none;
+  -webkit-border-radius: none;
+  border-radius: none;
+}
+
+.thumb-title {
+  text-align: center;
+  font-size: 1rem;
+}
+
+.thumb-title.secondary {
+  text-align: left;
+}
+
+.thumb-title.secondary.back {
+  cursor: pointer;
+}
+
+.thumb-title.secondary.left {
+  font-size: 1.5rem;
+}
+
+.thumb-desc {
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+
 
 main {
   flex: 1;
   padding: 20px;
 }
 
-.flex-grid-3 {
-  display: flex;
-  flex-flow: row;
-  justify-content: center;
-  text-align: center;
-  margin: auto;
-  border: 2px solid #d11141;
-  margin: 10px;
- 
-}
 
-.grid-col{
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  margin: 10px;
-  border: 1px solid #00aedb;
-  width: auto;
-}
-
-.container-thumb{
-  min-width: 60px;
-  height: 60px;
-  background-color: #eeeeee;
-  background-repeat: no-repeat;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  border-radius: 10px; /* future proofing */
-  margin: 10px; 
-}
-
-
-/* FIXME this next lines */
-ul {
-  display: flex;
-  align-items: stretch; /* Default */
-  justify-content: space-between;
-  width: 100%;
-  background: #cacaca;
+/* First the Grid */
+.grid-container {
+  display: -ms-grid;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16em, 1fr));
+  grid-gap: .2rem;
+  justify-items: stretch;
   margin: 0;
   padding: 0;
 }
-li {
-  display: block;
-  flex: 0 1 auto; /* Default */
-  list-style-type: none;
-  background: #fafafa;
+
+/* The Picture Frame */
+.grid-frame {
+  font-size: 1.5rem;
+  text-align: center;
+  background-color: #282828;
+  color: #d9d9d9;
 }
 
-.main-rover-icon {
-  min-width: 60px;
-  height: 60px;
-  background-color: white;
-  background-size: 32px 32px;
-  background-position: center;
-  background-repeat: no-repeat;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  border-radius: 10px; /* future proofing */
+.grid-frame:hover {
+  transform: scale(1.03);
+  transition: 300ms ease-in;
 }
 
-img {
+/* The Images */
+.grid-img {
   max-width: 100%;
-  padding-bottom: 1em;
+  height: auto;
+  object-fit: cover;
+  /**/
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  /**/
+  transition: opacity 0.25s ease-in-out;
+}
+
+.grid-img:hover {
+  opacity: .7;
+}
+
+ /* modal popup styles  */
+.image-modal-popup {
+  position: fixed;
+  overflow: auto;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  animation: 500ms fadeIn;
+  display: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.image-modal-popup .wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 75em;
+  margin: auto;
+  margin-top: 2em;
+  position: relative;
+}
+
+.image-modal-popup .description {
+  text-align: center;
+}
+.image-modal-popup img {
+  width: 80%;
+  max-height: calc(100vh - 150px);
+  margin-bottom: 1em;
+  cursor: pointer;
+}
+.image-modal-popup span {
+  position: absolute;
+  top: 0;
+  right: 0.8em;
+  font-size: 4rem;
+  color: red;
+  cursor: pointer;
+}
+.image-modal-popup p {
+  margin: 5px auto;
+  font-size: 1.1rem;
+}
+.image-modal-popup a {
+  margin-bottom: 0.3em;
+  display: inline-block;
+  color: #222;
+  font-weight: 500;
+  text-decoration: none;
+  background: #fff;
+  margin: 0.7em 0.7em;
+  padding: 0.7em 0.8em;
+  border-radius: 6px;
+}
+
+
+/* \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */
+
+
+
+@media (max-aspect-ratio: 1/1) {
+  li {
+    height: 30vh;
+  }
 }
 /* \\\\\\\\FIXME this next lines */
 
