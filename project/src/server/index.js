@@ -13,11 +13,12 @@ app.use(bodyParser.json())
 app.use('/', express.static(path.join(__dirname, '../public')))
 
 // your API calls
+// Call for latest photos from nasa api which will return 
+// an array of customized objects.
 app.get('/latest_photos', async (req, res) => {
     try {
         let response = await fetch(
             `https://api.nasa.gov/mars-photos/api/v1/rovers/${req.query.Rover}/latest_photos?page=1&api_key=${process.env.API_KEY}`)
-            //`https://api.nasa.gov/mars-photos`)
             .then(res => { 
                 return res.json()
             })
@@ -41,7 +42,6 @@ app.get('/latest_photos', async (req, res) => {
             res.send(response)
         }
     } catch (error) {
-        console.log('error:', error);
         res.send({error})
     }
 })

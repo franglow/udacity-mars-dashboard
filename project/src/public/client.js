@@ -31,11 +31,11 @@ const displayBody = (body, element) => {
     })
 }
 
+// Overflow body in order to display modal
 const overflowBody = (body, element) => {
     body.style.overflow = 'hidden'
     element.style.display = 'block'
 }
-
 
 const displayModal = (e) => {
     const modal_popup = document.querySelector('.image-modal-popup')
@@ -51,6 +51,8 @@ const displayModal = (e) => {
     modal_element('img').src = e.target.src
 }
 
+// Main icons event handler, event to call for gallery api request and
+// also resetState method handler for back button event.
 const headerButtonsHandler = (e) => {
     const element_selected = e.target.dataset.name
 
@@ -93,9 +95,11 @@ window.addEventListener('load', () => {
 })
 
 // ------------------------------------------------------  COMPONENTS
+// Base on rover_active property from store it will return 
+// a Home Page which includes an error handler or 
+// Rover Page which shows informations related and image gallery 
+// of the latest photos.
 const ViewsHandler = (state) => {
-
-    // Views selection
     if (state.get('rover_active')) {
         return `
             <header class="secondary">
@@ -125,6 +129,7 @@ const ViewsHandler = (state) => {
     }
 }
 
+// List all available rovers for Homepage
 const IconList = (state) => {
     const rovers = state.get('rovers')
     // looping template strings
@@ -145,6 +150,7 @@ const IconList = (state) => {
     `
 }
 
+// Show information about active rover and back buttom for Rover Page
 const RoverSelectedView = (state) => {
     return `
         <div class="grid-col secondary">
@@ -164,6 +170,7 @@ const RoverSelectedView = (state) => {
     `
 }
 
+// Image grid and modal popup for Rover Page.
 const ImagesGallery = (rover_album) => {
     return `
         <div class="grid-container"> 
