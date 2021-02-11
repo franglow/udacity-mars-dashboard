@@ -23,6 +23,7 @@ app.get('/latest_photos', async (req, res) => {
                 return res.json()
             })
         if (!response.error && response.latest_photos.length) {
+            // Higher order function map()
             let rover_info = response.latest_photos.map(item => {
                 return {
                     name: item.rover.name,

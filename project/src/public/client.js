@@ -81,13 +81,31 @@ const resetState = () => {
     })
 }
 
-// create content
+// create content with Higher order functions
+
+const home_page_constructor = state =>{ 
+    return HomePageHeader(state) +
+        HomePageMain(state)
+}
+
+const rover_page_constructor = (state) => {
+    return RoverPageHeader(state) + 
+    RoverPageMain(state.get('rover_album'))
+}
+
+const ViewsHandler = (state) => {
+    if (state.get('rover_active')) {
+        return rover_page_constructor(state)
+    } else {
+        return home_page_constructor(state)
+    }
+}
+
 const App = (state) => {
     const rover_icon = document.querySelector('#root')
     rover_icon.addEventListener('click', headerButtonsHandler )
     return ViewsHandler(state)
 }
-
 
 // listening for load event because page should load before any JS is called
 window.addEventListener('load', () => {
@@ -95,64 +113,74 @@ window.addEventListener('load', () => {
 })
 
 // ------------------------------------------------------  COMPONENTS
-// Base on rover_active property from store it will return 
-// a Home Page which includes an error handler or 
-// Rover Page which shows informations related and image gallery 
-// of the latest photos.
-const ViewsHandler = (state) => {
-    if (state.get('rover_active')) {
-        return `
-            <header class="secondary">
-                ${RoverSelectedView(state)}
-            </header>
-            <main>
-                <section>
-                    ${ImagesGallery(state.get('rover_album'))}
-                </section>
-            </main>
-            <footer></footer>
-        `
-    } else {
-        return `
-            <header>
-                ${IconList(state)}
-            </header>
-            <main>
-                <div class='error-handler'>
-                    <p>${state.get('error_message') 
-                    ? state.get('error_message') : ''}</p>
-                </div>
-            </main>
-            <footer>
-            </footer>
-        `
-    }
-}
 
-// List all available rovers for Homepage
-const IconList = (state) => {
-    const rovers = state.get('rovers')
-    // looping template strings
-    // https://wesbos.com/template-strings-html
+// grid-col with icon image component 
+const GridColumns = item => 
+    `
+    <div class="grid-col">
+        <img 
+            class="container-thumb" 
+            data-name="${item}"
+            src="./assets/images/icons/curiosity.svg" >
+        </img>
+        <p class="thumb-title">${item}</p>
+    </div>
+    ` 
+
+// Home page header component
+const HomePageHeader = (state) => {
+    const rovers = state.get('rovers')    
+    // Higher-order function map()
     return `
-        ${rovers.map(item => {
-            return `
-                <div class="grid-col">
-                        <img 
-                            class="container-thumb" 
-                            data-name="${item}"
-                            src="./assets/images/icons/curiosity.svg" >
-                        </img>
-                        <p class="thumb-title">${item}</p>
-                </div>
-            `
-        }).join('')}
+        <header>
+            ${rovers.map(GridColumns).join('')}
+        </header>
     `
 }
 
-// Show information about active rover and back buttom for Rover Page
-const RoverSelectedView = (state) => {
+// Home page main content component
+const HomePageMain = (state) =>
+    `
+    <main>
+        <div class='error-handler'>
+            <p>${state.get('error_message') 
+               ? state.get('error_message') : ''}</p>
+        </div>
+    </main>
+    <footer></footer>
+    `
+
+// grid-frame with image component
+const GridFrame = item =>
+    `
+    <figure class="grid-frame">
+        <img 
+            class="grid-img" 
+            src="${item.get('most_recent_photo_url')}"
+            data-name = "gallery-image"
+            data-camera_full_name="${item.get('camera_full_name')}" 
+            data-date_taken="${item.get('photo_date_taken')}">
+        <figcaption>${item.get('camera')}</figcaption>
+    </figure>
+    `
+// modal-popup component
+const ModalPopup = () => 
+    `
+    <div class="image-modal-popup">
+        <div class="wrapper">
+            <span>&times;</span>
+            <img src="" alt="Image Modal">
+            <div class="description">
+                <h1>This is placeholder content</h1>
+                <p>This content will be overwritten when the modal opens</p>
+            </div>
+        </div>
+    </div>
+    `
+// Rover page header component
+const RoverPageHeader = (state) => {
     return `
+    <header class="secondary">
         <div class="grid-col secondary">
             <p class="container-thumb thumb-title secondary back" data-name="previous-page">
                 Back
@@ -167,37 +195,23 @@ const RoverSelectedView = (state) => {
                 current status: ${state.get('rover_album').first().get('status')}</br>
             </p>
         </div>
+    </header>
     `
 }
 
-// Image grid and modal popup for Rover Page.
-const ImagesGallery = (rover_album) => {
+// Rover page gallery component
+const RoverPageMain = (rover_album) => {
+    // Higher-order function map()
     return `
-        <div class="grid-container"> 
-            ${rover_album.map(item => {
-                return `
-                    <figure class="grid-frame">
-                        <img 
-                            class="grid-img" 
-                            src="${item.get('most_recent_photo_url')}"
-                            data-name = "gallery-image"
-                            data-camera_full_name="${item.get('camera_full_name')}" 
-                            data-date_taken="${item.get('photo_date_taken')}">
-                        <figcaption>${item.get('camera')}</figcaption>
-                    </figure>
-                `
-            }).join('')}
-        </div>
-        <div class="image-modal-popup">
-            <div class="wrapper">
-                <span>&times;</span>
-                <img src="" alt="Image Modal">
-                <div class="description">
-                    <h1>This is placeholder content</h1>
-                    <p>This content will be overwritten when the modal opens</p>
-                </div>
+    <main>
+        <section>
+            <div class="grid-container"> 
+                ${rover_album.map(GridFrame).join('')}
             </div>
-        </div>
+            ${ModalPopup()}
+        </section>
+    </main>
+    <footer></footer>
     `
 }
 
